@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import org.java_websocket.client.*;
+import org.java_websocket.handshake.*;
 
 
 public class MainActivity extends AppCompatActivity {
