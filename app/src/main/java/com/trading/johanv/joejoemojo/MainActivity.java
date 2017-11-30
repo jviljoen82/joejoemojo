@@ -1,28 +1,63 @@
 package com.trading.johanv.joejoemojo;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.EditText;
-import org.java_websocket.client.*;
-import org.java_websocket.handshake.*;
+import android.util.Log;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.trading.johanv.joejoemojo.MESSAGE";
+    public static WebSocketClient webSocketClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        connectWebSocket();
     }
 
-    /** Send Button click event */
-    public void sendMessage(View view) {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
+    private void connectWebSocket() {
+        URI uri;
+
+        try {
+            uri = new URI("wss://ws.binary.com/websockets/v3?app_id=11543");
+            Log.println(Log.INFO, "URI", uri.toString());
+        } catch (URISyntaxException uriEx) {
+            uriEx.printStackTrace();
+            return;
+        }
+
+        webSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake handShakeData) {
+                webSocketClient.send("ping: 1");
+            }
+
+            @Override
+            public void onMessage(String message) {
+
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+
+            }
+
+            @Override
+            public void onError(Exception ex) {
+
+            }
+        };
+
+        try {
+            webSocketClient.connect();
+            Log.println(Log.INFO,"WebSocket", "CONNECTION SUCCESSFUL");
+        } catch (Exception webEx) {
+            Log.println(Log.ERROR, "WebSocket", "not connecting" + webEx.getMessage());
+        }
     }
 }
